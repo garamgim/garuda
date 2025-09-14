@@ -32,3 +32,9 @@ pub extern "C" fn _start() -> ! {
     // named `_start` by default
     loop {}
 }
+
+// To build this binary
+// 1. target embedded ARM system which has no underlying operating system
+// cargo build --target thumbv7em-none-eabihf
+// 2. compile this for the host system (macOS)
+// cargo rustc -- -C link-args="-e __start -static -nostartfiles"

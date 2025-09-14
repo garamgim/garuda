@@ -3,10 +3,18 @@ name = "garuda"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-
+# the profile used for `cargo build`
 [profile.dev]
-panic = "abort"
+panic = "abort" # disable stack unwinding on panic
 
+# the profile used for `cargo build --release`
 [profile.release]
-panic = "abort"
+panic = "abort" # disable stack unwinding on panic
+
+[[bin]]
+# By setting the test and bench fields to false, we instruct cargo to not build our binary in test or benchmark mode. 
+# Now cargo check --all-targets should not throw any errors anymore, 
+# and the checkOnSave implementation of rust-analyzer should be happy too.
+name = "garuda"
+test = false
+bench = false
