@@ -26,10 +26,22 @@ fn panic(_info: &PanicInfo) -> ! {
     Rust는 기본적으로 "Rust" 호출 규약을 사용하지만, 운영체제의 진입점은 C 호출 규약을 따라야 하는것이 사실상 표준이다.
     그래서 extern "C"로 지정한다.
 */
+
+static HELLO: &[u8] = b"Hello World!";
+
+// this function is the entry point, since the linker looks for a function
+// named `_start` by default
 #[unsafe(no_mangle)]    
 pub extern "C" fn _start() -> ! {
-    // this function is the entry point, since the linker looks for a function
-    // named `_start` by default
+    let vga_buffer = 0xb8000 as *mut u8;
+
+    for (i, &byte) in HELLO.iter().enumerate() {
+        unsafe {
+            *vga_buffer.offset(i as isize * 2) = byte;
+            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;  // cyan foreground
+        }
+    }
+
     loop {}
 }
 
