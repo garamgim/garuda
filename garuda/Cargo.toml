@@ -20,4 +20,4 @@ test = false
 bench = false
 
 [dependencies]
-bootloader = "0.11.13"
+bootloader = "0.9"
