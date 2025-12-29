@@ -2,6 +2,7 @@
 #![no_main] // disable all Rust-level entry points
 
 use core::panic::PanicInfo;
+mod vga_buffer;
 
 /*
     panic handler는 패닉이 발생했을 때 호출되는 함수이다.
@@ -33,14 +34,7 @@ static HELLO: &[u8] = b"Hello World!";
 // named `_start` by default
 #[unsafe(no_mangle)]    
 pub extern "C" fn _start() -> ! {
-    let vga_buffer = 0xb8000 as *mut u8;
-
-    for (i, &byte) in HELLO.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;  // cyan foreground
-        }
-    }
+    vga_buffer::print_something();
 
     loop {}
 }
