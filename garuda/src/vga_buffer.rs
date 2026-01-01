@@ -1,5 +1,19 @@
 use core::fmt;
 use volatile::Volatile;
+use lazy_static::lazy_static;
+
+// Rust's const evaluator normally initializes static variables at compile time.
+// So it cannot convert raw pointers to references at compile time
+// because it cannot guarantee the validity of the memory address.
+// We use lazy_static! to initialize the WRITER lazily at runtime, allowing us to
+// safely create a reference to the VGA buffer address (0xb8000).
+lazy_static! {
+    pub static ref WRITER: Writer = Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    };
+}
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
