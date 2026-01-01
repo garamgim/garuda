@@ -1,6 +1,7 @@
 use core::fmt;
 use volatile::Volatile;
 use lazy_static::lazy_static;
+use spin::Mutex;
 
 // Rust's const evaluator normally initializes static variables at compile time.
 // So it cannot convert raw pointers to references at compile time
@@ -8,11 +9,13 @@ use lazy_static::lazy_static;
 // We use lazy_static! to initialize the WRITER lazily at runtime, allowing us to
 // safely create a reference to the VGA buffer address (0xb8000).
 lazy_static! {
-    pub static ref WRITER: Writer = Writer {
+    // Spin Mutex is a simple mutual exclusion primitive for no_std environments
+    // It doesn't require OS support like blocking or sleeping, just busy-waits
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
+    });
 }
 
 #[allow(dead_code)]
