@@ -9,10 +9,10 @@ mod vga_buffer;
     여기서는 무한 루프를 돌면서 멈추도록 한다. 
 */
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
-
 
 /*
     Name mangling은 컴파일러가 함수나 변수의 이름을 변경하는 과정이다.
@@ -28,15 +28,11 @@ fn panic(_info: &PanicInfo) -> ! {
     그래서 extern "C"로 지정한다.
 */
 
-static HELLO: &[u8] = b"Hello World!";
-
 // this function is the entry point, since the linker looks for a function
 // named `_start` by default
-#[unsafe(no_mangle)]    
-pub extern "C" fn _start() -> ! {
-    use core::fmt::Write;
-    vga_buffer::WRITER.lock().write_str("Hello again").unwrap();
-    write!(vga_buffer::WRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
+#[unsafe(no_mangle)]
+pub extern "C" fn _start() {
+    println!("Hello World{}", "!");
 
     loop {}
 }
